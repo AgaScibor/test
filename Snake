@@ -1,0 +1,170 @@
+#include <iostream>
+#include <conio.h>     // Używa funkcje getch()
+#include <windows.h>
+
+
+using namespace std;
+bool koniec_gry;
+const int DLUGOSC = 30;
+const int WYSOKOSC = 20;
+int x, y, znakX, znakY, wynik;
+int ogonX[100], ogonY[100];
+int nOgon;
+
+enum poruszanie{STOP = 0,LEFT,RIGHT,UP,DOWN};
+poruszanie ruch; 
+
+
+void Start()
+{
+	koniec_gry = false;
+	ruch = STOP;
+	x = DLUGOSC / 2;
+	y = WYSOKOSC / 2;
+	znakX = rand() % DLUGOSC;
+	znakY = rand() % WYSOKOSC;
+	wynik = 0; 
+
+}
+void Wyglad()
+//Wyglad ogona i planszy do snaka.
+{
+	system("cls"); // system ("clear"); 
+	for (int i = 0; i < DLUGOSC+2; i++)
+		cout << "|";
+	cout << endl;
+
+	for (int i = 0; i < WYSOKOSC; i++)
+	{
+		for (int j = 0; j < DLUGOSC; j++)
+		{
+			if (j == 0)
+				cout << "|";
+			if (i == y && j == x)
+				cout <<"()";
+			else if (i == znakY && j == znakX)
+				cout << "B";
+			else
+			{
+				bool print = false;
+				for (int k = 0; k < nOgon; k++)
+				{
+					
+					if (ogonX[k] == j && ogonY[k] == i)
+					{
+						cout << "o";
+						print = true;
+					}
+					
+				}
+				if (!print)
+					cout << " ";
+				
+			}
+				
+
+			if (j == DLUGOSC-1)
+				cout << "|";
+		}
+		cout << endl;
+	}
+
+	for (int i = 0; i < DLUGOSC+2; i++)
+		cout << "|";
+	cout << endl;
+	cout << "Wynik:" <<wynik<< endl;
+
+
+}
+void Sterowanie()
+//Sterowanie snaka'em.
+{
+	if(_kbhit())		//do okreslenia, czy klawisz zostal nacisniety
+	{ }
+		switch (_getch())
+		{
+		case 'a':
+			 ruch = LEFT;
+			break;
+		case 'd':
+			 ruch = RIGHT;
+			break;
+		case 'w':
+			 ruch = UP;
+			break;
+		case 's':
+			 ruch = DOWN;
+			break;
+		case 'x':
+			koniec_gry = true;
+			break;
+		}
+}
+void Wejscie()
+{
+	int przedX = ogonX[0];
+	int przedY = ogonY[0];
+	int przed2X, przed2Y;
+	ogonX[0] = x;
+	ogonY[0] = y;
+	for (int i = 1; i < nOgon; i++)
+	{
+		przed2X = ogonX[i];
+		przed2Y = ogonY[i];
+		ogonX[i] = przedX;
+		ogonY[i] = przedY;
+		przedX = przed2X;
+		przedY = przed2Y;
+	}
+	switch (ruch)
+	{
+	case LEFT:
+		x--;
+		break;
+	case RIGHT:
+		x++;
+		break;
+	case UP:
+		y--;
+		break;
+	case DOWN:
+		y++;
+		break;
+	default:
+		break;
+		
+	}
+	//if (x > DLUGOSC || x < 0 || y > WYSOKOSC || y < 0)
+		//koniec_gry = true;
+	if (x >= DLUGOSC) x = 0;
+	else if (x < 0) x = DLUGOSC - 1;
+
+	if (y >= WYSOKOSC) y = 0;
+	else if (y < 0) y = WYSOKOSC - 1;
+
+	for (int i = 0; i < nOgon; i++)
+		if (ogonX[i] == x && ogonY[i] == y)
+			koniec_gry = true; 
+	if (x == znakX && y == znakY)
+	{
+		nOgon += 1;
+		wynik += 1;
+		znakX = rand() % DLUGOSC;
+		znakY = rand() % WYSOKOSC;
+		nOgon ++;
+	}
+
+}
+
+int main()
+{
+	Start();
+	while (!koniec_gry)
+	{
+		Wyglad();
+		Sterowanie();
+		Wejscie();
+		Sleep(10); //sleep(10);
+	}
+	return 0;
+}

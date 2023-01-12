@@ -79,8 +79,7 @@ void Wyglad()
 void Sterowanie()
 //Sterowanie snaka'em.
 {
-	if(_kbhit())		//do okreslenia, czy klawisz zostal nacisniety
-	{ }
+	
 		switch (_getch())
 		{
 		case 'a':
@@ -130,6 +129,8 @@ void Wejscie()
 	case DOWN:
 		y++;
 		break;
+	case 27:
+	        break;
 	default:
 		break;
 		

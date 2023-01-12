@@ -102,19 +102,19 @@ void Sterowanie()
 }
 void Wejscie()
 {
-	int przedX = ogonX[0];
-	int przedY = ogonY[0];
-	int przed2X, przed2Y;
+	int prevX = ogonX[0];
+	int prevY = ogonY[0];
+	int prev2X, prev2Y;
 	ogonX[0] = x;
 	ogonY[0] = y;
 	for (int i = 1; i < nOgon; i++)
 	{
-		przed2X = ogonX[i];
-		przed2Y = ogonY[i];
-		ogonX[i] = przedX;
-		ogonY[i] = przedY;
-		przedX = przed2X;
-		przedY = przed2Y;
+		prev2X = ogonX[i];
+		prev2Y = ogonY[i];
+		ogonX[i] = prevX;
+		ogonY[i] = prevY;
+		prevX = prev2X;
+		prevY = prev2Y;
 	}
 	switch (ruch)
 	{

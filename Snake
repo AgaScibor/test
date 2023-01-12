@@ -41,7 +41,7 @@ void Wyglad()
 			if (j == 0)
 				cout << "|";
 			if (i == y && j == x)
-				cout <<"()";
+				cout <<"#";
 			else if (i == znakY && j == znakX)
 				cout << "B";
 			else

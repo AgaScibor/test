@@ -164,7 +164,7 @@ int main()
 		Wyglad();
 		Sterowanie();
 		Wejscie();
-		Sleep(10); //sleep(10);
+		
 	}
 	return 0;
 }

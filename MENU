@@ -1,0 +1,212 @@
+#include <iostream>
+#include <vector>
+#include <fstream>
+#include <string>
+#include <Windows.h>
+#include <ArduinoJson-v6.21.2.h>
+
+using namespace std;
+using namespace ArduinoJson;
+
+// zapisywanie wynikow gry w pliku JSON  
+void SaveGame(const std::string& filename, const std::vector<int>& scores)
+{
+    DynamicJsonDocument doc(1024);
+
+    JsonArray scoreArray = doc.createNestedArray("scores");
+
+    for (const auto& score : scores)
+    {
+        scoreArray.add(score);
+    }
+
+    std::ofstream file(filename);
+    if (!file.is_open())
+    {
+        cout << "Blad - nie mozna otworzyc pliku JSON" << endl;
+        return;
+    }
+
+    serializeJson(doc, file);
+    file.close();
+}
+// Czyszczenie ekranu 
+void clearScreen()
+{
+    
+    std::system("cls");
+}
+// wyswietlanie menu glownego
+void Menu()
+{
+    clearScreen();
+    cout << "=====================================" << endl;
+    cout << "              MENU              " << endl;
+    cout << "=====================================" << endl;
+    cout << "1. New game" << endl;
+    cout << "2. High scores" << endl;
+    cout << "3. Options" << endl;
+    cout << "4. Exit" << endl;
+    cout << "=====================================" << endl;
+    cout << "Wybierz numer opcji: ";
+}
+
+void HighScores(const std::vector<int>& scores)
+{
+    clearScreen();
+    cout << "=====================================" << endl;
+    cout << "            HIGH SCORES              " << endl;
+    cout << "=====================================" << endl;
+
+    if (scores.empty())
+    {
+        cout << "Brak wynikow" << endl;
+    }
+    else
+    {
+        int rank = 1;
+        for (const auto& score : scores)
+        {
+            cout << rank++ << ". " << score << endl;
+        }
+    }
+
+    cout << "=====================================" << endl;
+    cout << "Kliknij Enter aby kontynulowac...";
+    cin.ignore();
+    cin.get();
+}
+// wyswietlenie i wybor opcji trudnosci 
+void DifficultyOptions()
+{
+    clearScreen();
+    cout << "=====================================" << endl;
+    cout << "          DIFFICULTY OPTIONS         " << endl;
+    cout << "=====================================" << endl;
+    cout << "1. Easy Peasy" << endl;
+    cout << "2. Normal" << endl;
+    cout << "3. God of War" << endl;
+    cout << "=====================================" << endl;
+    cout << "Wybierz opcje trudnosci: ";
+
+    char userInput;
+    cin >> userInput;
+
+    switch (userInput)
+    {
+    case '1':
+        cout << "You selected Easy Peasy!" << endl;
+        break;
+    case '2':
+        cout << "You selected Normal!" << endl;
+        break;
+    case '3':
+        cout << "You selected God of War!" << endl;
+        break;
+    default:
+        cout << "Invalid input." << endl;
+        break;
+    }
+
+    cout << "=====================================" << endl;
+    cout << "Kliknij Enter aby kontynułowac...";
+    cin.ignore();
+    cin.get();
+}
+//nowa gra i wybor losowej liczby 
+void NewGame(std::vector<int>& scores)
+{
+    clearScreen();
+    cout << "=====================================" << endl;
+    cout << "          NEW GAME SELECTED          " << endl;
+    cout << "=====================================" << endl;
+
+    string nickname;
+    cout << "Podaj swoja nazwe: ";
+    cin >> nickname;
+
+    int randomNumber = rand() % 100 + 1;
+    cout << "Losowa liczba: " << randomNumber << endl;
+
+    cout << "Podaj slowo: ";
+    string word;
+    cin >> word;
+
+    cout << "Podales: " << word << endl;
+
+//oblicza wynik gry
+    int score = static_cast<int>(nickname.length() + word.length()) * randomNumber;
+    cout << "Twoj wynik: " << score << endl;
+
+    scores.push_back(score);
+
+    cout << "=====================================" << endl;
+    cout << "Kliknij Enter aby kontynulowac...";
+
+    cin.ignore();
+    cin.get();
+}
+
+int main()
+{
+    std::vector<int> highScores;
+
+    std::ifstream file("game.json");
+    if (file.is_open())
+    {
+        std::string fileContent((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+
+    // odczytywanie plikow JSON
+        DynamicJsonDocument doc(1024);
+        DeserializationError error = deserializeJson(doc, fileContent);
+
+        if (error)
+        {
+            cout << "Blad - nie można wczytac pliku JSON" << endl;
+        }
+        else
+        {
+            JsonArray scoreArray = doc["scores"].as<JsonArray>();
+
+            for (const auto& score : scoreArray)
+            {
+                highScores.push_back(score.as<int>());
+            }
+        }
+    }
+    else
+    {
+        cout << "Blad - nie można otworzyc pliku JSON" << endl;
+    }
+
+    srand(static_cast<unsigned>(time(0)));
+
+    char option;
+    do
+    {
+        Menu();
+        cin >> option;
+
+        switch (option)
+        {
+        case '1':
+            NewGame(highScores);
+            break;
+        case '2':
+            HighScores(highScores);
+            break;
+        case '3':
+            DifficultyOptions();
+            break;
+        case '4':
+            cout << "Wyjscie z gry.." << endl;
+            SaveGame("game.json", highScores);
+            break;
+        default:
+            cout << "Nieprawidłowa opcja." << endl;
+            break;
+        }
+    } while (option != '4');
+
+    return 0;
+}

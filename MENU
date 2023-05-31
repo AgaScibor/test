@@ -3,15 +3,15 @@
 #include <fstream>
 #include <string>
 #include <Windows.h>
-#include <ArduinoJson-v6.21.2.h>
+#include "ArduinoJson-v6.21.2.h"
 
 using namespace std;
 using namespace ArduinoJson;
 
-// zapisywanie wynikow gry w pliku JSON  
+// Zapisywanie wyników gry do pliku JSON
 void SaveGame(const std::string& filename, const std::vector<int>& scores)
 {
-    DynamicJsonDocument doc(1024);
+    StaticJsonDocument doc(1024);
 
     JsonArray scoreArray = doc.createNestedArray("scores");
 
@@ -30,13 +30,14 @@ void SaveGame(const std::string& filename, const std::vector<int>& scores)
     serializeJson(doc, file);
     file.close();
 }
-// Czyszczenie ekranu 
+
+// Czyszczenie ekranu
 void clearScreen()
 {
-    
     std::system("cls");
 }
-// wyswietlanie menu glownego
+
+// Wyswietlanie menu glownego
 void Menu()
 {
     clearScreen();
@@ -76,7 +77,8 @@ void HighScores(const std::vector<int>& scores)
     cin.ignore();
     cin.get();
 }
-// wyswietlenie i wybor opcji trudnosci 
+
+// Wyswietlenie i wybor opcji trudnosci
 void DifficultyOptions()
 {
     clearScreen();
@@ -113,7 +115,8 @@ void DifficultyOptions()
     cin.ignore();
     cin.get();
 }
-//nowa gra i wybor losowej liczby 
+
+// Nowa gra i wybor losowej liczby
 void NewGame(std::vector<int>& scores)
 {
     clearScreen();
@@ -134,7 +137,7 @@ void NewGame(std::vector<int>& scores)
 
     cout << "Podales: " << word << endl;
 
-//oblicza wynik gry
+    // Oblicza wynik gry
     int score = static_cast<int>(nickname.length() + word.length()) * randomNumber;
     cout << "Twoj wynik: " << score << endl;
 
@@ -156,13 +159,13 @@ int main()
     {
         std::string fileContent((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 
-    // odczytywanie plikow JSON
-        DynamicJsonDocument doc(1024);
+        // Odczytywanie plikow JSON
+        StaticJsonDocument doc(1024);
         DeserializationError error = deserializeJson(doc, fileContent);
 
         if (error)
         {
-            cout << "Blad - nie można wczytac pliku JSON" << endl;
+            cout << "Blad - nie mozna wczytac pliku JSON" << endl;
         }
         else
         {
@@ -176,7 +179,7 @@ int main()
     }
     else
     {
-        cout << "Blad - nie można otworzyc pliku JSON" << endl;
+        cout << "Blad - nie mozna otworzyc pliku JSON" << endl;
     }
 
     srand(static_cast<unsigned>(time(0)));
